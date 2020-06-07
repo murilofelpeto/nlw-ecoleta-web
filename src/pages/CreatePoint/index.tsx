@@ -5,6 +5,7 @@ import {Link, useHistory} from 'react-router-dom'
 import {Map, TileLayer, Marker} from 'react-leaflet';
 import {LeafletMouseEvent} from 'leaflet'
 import {api, ibge} from '../../services/api';
+import Dropzone from "../../components/dropzone";
 import './styles.css';
 
 //We use useEffect to call api just once, and not every time our function reload
@@ -46,6 +47,8 @@ const CreatePoint = () => {
         email: '',
         whatsapp: '',
     });
+
+    const[selectedFile, setSelectedFile] = useState<File>();
 
     useEffect(() => {
         api.get('items').then(resp => {
@@ -116,16 +119,21 @@ const CreatePoint = () => {
         const city = selectedCity;
         const [latitude, longitude] = selectedPosition;
         const items = selectedItems;
+        const image = selectedFile;
 
-        const payload = {
-            name,
-            email,
-            whatsapp,
-            uf,
-            city,
-            latitude,
-            longitude,
-            items
+        const payload = new FormData();
+
+        payload.append('name', name);
+        payload.append('email', email);
+        payload.append('whatsapp', whatsapp);
+        payload.append('uf', uf);
+        payload.append('city', city);
+        payload.append('latitude', String(latitude));
+        payload.append('longitude', String(longitude));
+        payload.append('items', items.join(','));
+
+        if(image) {
+            payload.append('image', image)
         }
 
         await api.post('points', payload).then(response => {
@@ -150,6 +158,8 @@ const CreatePoint = () => {
             </header>
             <form onSubmit={handleSubmit}>
                 <h1>Cadastro do <br /> ponto de coleta</h1>
+
+                <Dropzone onFileUploaded={setSelectedFile}/>
 
                 <fieldset>
                     <legend>
