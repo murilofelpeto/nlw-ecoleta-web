@@ -2,7 +2,7 @@ import axios from 'axios';
 
 //We use axios because it facilitate the access to an external service
 const api = axios.create({
-    baseURL: 'http://localhost:3333'
+    baseURL: 'https://nlw-ecoleta-api.herokuapp.com/'
 });
 
 const ibge = axios.create({
